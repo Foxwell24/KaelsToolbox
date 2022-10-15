@@ -41,6 +41,12 @@ namespace KaelsToolBox_2.Math
         }
 
         #region Operators
+        public static bool operator ==(Vector2I left, Vector2I right)
+            => right.x == left.x && right.y == left.y;
+
+        public static bool operator !=(Vector2I left, Vector2I right)
+            => right.x != left.x || right.y != left.y;
+
         public static Vector2I operator *(Vector2I left, int right)
             => new Vector2I(right * left.x, right * left.y);
 
