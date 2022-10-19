@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KaelsToolBox_2.Math
+﻿namespace KaelsToolBox_2.Math
 {
     public struct Vector2I
     {
-        private static Random random = new();
-
         #region Defaults
         public static Vector2I Zero = new Vector2I(0, 0);
         public static Vector2I One = new Vector2I(1, 1);
@@ -30,8 +21,8 @@ namespace KaelsToolBox_2.Math
         /// <summary>
         /// Random <see cref="Vector2I"/> with values greater or equal to 0 and less than <see cref="int.MaxValue"/>
         /// </summary>
-        public static Vector2I Random() => new Vector2I(random.Next(), random.Next());
-        public static Vector2I Random(int max) => new Vector2I(random.Next(max), random.Next(max));
+        public static Vector2I Random(Random random) => new Vector2I(random.Next(), random.Next());
+        public static Vector2I Random(Random random, int max) => new Vector2I(random.Next(max), random.Next(max));
 
         public override bool Equals(object? obj)
         {
