@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KaelsToolbox.GameStuff
 {
-    public class Rectangle : IShape
+    public class Rectangle
     {
         public int X, Y, Width, Height;
 

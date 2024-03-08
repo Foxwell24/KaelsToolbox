@@ -27,7 +27,7 @@ namespace KaelsToolBox_2.Web
             clients = new Dictionary<int, TcpClient>();
             listener = new TcpListener(IPAddress.Any, port);
 
-            new Thread(() => ServerThread()).Start();
+            new Thread(ServerThread).Start();
         }
 
         private void ServerThread()
