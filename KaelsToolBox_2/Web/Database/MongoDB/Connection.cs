@@ -35,12 +35,6 @@ public class Connection(string connectionUri)
 
     #region CRUD
 
-    public void GetAllSingle<T>(string database, string collection, string field, string key) where T : DatabaseObject
-    {
-        GetDatabase(database).GetCollection<T>(collection).Distinct<T>(field, key);
-        throw new NotImplementedException();
-    }
-
     /// <summary>
     /// 
     /// </summary>
