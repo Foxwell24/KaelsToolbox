@@ -5,6 +5,9 @@ namespace KaelsToolBox_2.Web.Database.MongoDB;
 
 public class Connection(string connectionUri)
 {
+    public static Connection Instance { get; private set; }
+    public static Connection CreateInstance(string connectionUri) => Instance = new Connection(connectionUri);
+
     readonly MongoClientSettings settings = MongoClientSettings.FromConnectionString(connectionUri);
     MongoClient? client;
 
@@ -28,6 +31,16 @@ public class Connection(string connectionUri)
         }
     }
 
+
+
+    #region CRUD
+
+    public void GetAllSingle<T>(string database, string collection, string field, string key) where T : DatabaseObject
+    {
+        GetDatabase(database).GetCollection<T>(collection).Distinct<T>(field, key);
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -35,7 +48,7 @@ public class Connection(string connectionUri)
     /// <param name="database"></param>
     /// <param name="collection"></param>
     /// <param name="callback">First T is the old document, second T is the new document</param>
-    public void Watch<T>(string database, string collection, Action<ChangeStreamUpdateDescription, T, T> callback) where T : DatabaseObject
+    public void Watch<T>(string database, string collection, Action<T> callback) where T : DatabaseObject
     {
         Task.Run(() =>
         {
@@ -53,12 +66,10 @@ public class Connection(string connectionUri)
             {
                 ChangeStreamDocument<T> doc = enumerator.Current;
 
-                callback.Invoke(doc.UpdateDescription, doc.FullDocumentBeforeChange, doc.FullDocument);
+                callback.Invoke(doc.FullDocument);
             }
-        }).Start();
+        });
     }
-
-    #region CRUD
 
     public int Count<T>(string database, string collection) where T : DatabaseObject
     {
