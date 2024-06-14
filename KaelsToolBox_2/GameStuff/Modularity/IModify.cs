@@ -18,7 +18,7 @@ public class Attribute_Number : IChange
             var old = Value;
             this.value = value;
 
-            AttributeChanged.Invoke(this, new AttributeChangedArgs<T>(old, Value));
+            AttributeChanged?.Invoke(this, new AttributeChangedArgs(old, Value));
         }
     }
     public EventHandler<AttributeChangedArgs>? AttributeChanged;
@@ -33,7 +33,7 @@ public class Attribute_Number : IChange
             var old = ChangeOverTime;
             changeOverTime = value;
 
-            ChangeOverTimeChanged.Invoke(this, new AttributeChangedArgs<T>(old, ChangeOverTime));
+            ChangeOverTimeChanged?.Invoke(this, new AttributeChangedArgs(old, ChangeOverTime));
         }
     }
     public EventHandler<AttributeChangedArgs>? ChangeOverTimeChanged { get; set; }
