@@ -51,6 +51,30 @@ public class Attribute_Number : IChange
     }
 }
 
+public class Attribute_Damage : Attribute_Number
+{
+    public Type DamageType = Type.None;
+    public enum Type
+    {
+        None,
+        Slash,
+        Peirce,
+        Fire,
+        Frost
+    }
+
+    public new Attribute_Damage Clone()
+    {
+        return new()
+        {
+            Value = Value,
+            ChangeOverTime = ChangeOverTime,
+            ChangePerSecond = ChangePerSecond,
+            DamageType = DamageType,
+        };
+    }
+}
+
 public interface IChange
 {
     double ChangeOverTime { get; set; }
@@ -87,12 +111,12 @@ public class Gun : IUpdate
     }
 }
 
-public class Bullet : IUpdate
+public class Bullet : WorldSpaceObject, IUpdate
 {
     static readonly System.Reflection.FieldInfo[] fields = typeof(Gun).GetFields();
 
     public Attribute_Number Speed = new();
-    public Attribute_Number Damage = new();
+    public Attribute_Damage Damage = new();
 
     public void Update(double delta)
     {
@@ -101,9 +125,15 @@ public class Bullet : IUpdate
                 changer.Change(delta);
     }
 
+    
     public void Shoot()
     {
 
+    }
+
+    public void Collide<T>(T other) where T : IDamageable
+    {
+        other.ApplyDamage(Damage.Value, Damage.DamageType);
     }
 
     public Bullet Clone()
@@ -116,7 +146,58 @@ public class Bullet : IUpdate
     }
 }
 
+public interface IDamageable
+{
+    double Health { get; }
+
+    void ApplyDamage(double amount, Attribute_Damage.Type type);
+}
+
 public interface IUpdate
 {
     void Update(double delta);
+}
+
+// ----------------------------- //
+
+public abstract class WorldSpaceObject
+{
+    protected Vector2 position = Vector2.Zero;
+    public Vector2 Position => position;
+
+    protected float size = 1f;
+    public float Size => size;
+}
+
+public class Entity : WorldSpaceObject, IDamageable
+{
+    protected double health = 1;
+    public double Health => health;
+
+    protected Vector2 direction = Vector2.Zero;
+    public Vector2 Direction => direction;
+
+
+    protected List<Attribute_Damage.Type> vulnerabilities = [];
+    protected List<Attribute_Damage.Type> resistances = [];
+
+    public void ApplyDamage(double amount, Attribute_Damage.Type type)
+    {
+        if (vulnerabilities.Contains(type)) amount *= 2;
+        if (resistances.Contains(type)) amount /= 2;
+
+        health -= amount;
+    }
+}
+
+public class Slime : Entity
+{
+    public Slime()
+    {
+        vulnerabilities.Add(Attribute_Damage.Type.Slash);
+        resistances.Add(Attribute_Damage.Type.Peirce);
+
+        health = 10;
+        position.Y = 10;
+    }
 }
