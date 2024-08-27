@@ -5,7 +5,7 @@ namespace KaelsToolBox_2.Web.Database.MongoDB;
 
 public class Connection(string connectionUri)
 {
-    public static Connection Instance { get; private set; }
+    public static Connection Instance { get; private set; } = null!;
     public static Connection CreateInstance(string connectionUri) => Instance = new Connection(connectionUri);
 
     readonly MongoClientSettings settings = MongoClientSettings.FromConnectionString(connectionUri);
@@ -26,7 +26,7 @@ public class Connection(string connectionUri)
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"While trying to connect:\r\n    {ex}");
+            Console.WriteLine($"While trying to connect:\r\n{ex}");
             return false;
         }
     }

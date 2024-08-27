@@ -22,13 +22,12 @@ internal class Program
 
         var change_loop = Task.Run(() =>
         {
-            int counter = 0;
             while (true)
             {
                 var all = connection.GetAll<DatabaseObject>(database_name, database_main);
                 var chosen = all[Random.Shared.Next(all.Count)];
 
-                connection.Update(database_name, database_main, chosen with { Note = counter++.ToString("#00")});
+                connection.Update(database_name, database_main, chosen);
                 Thread.Sleep(1100);
             }
         });

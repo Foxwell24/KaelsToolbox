@@ -14,9 +14,6 @@ public record DatabaseObject
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = null!;
 
-    [BsonRepresentation(BsonType.String)]
-    public string? Note { get; set; }
-
     [BsonRepresentation(BsonType.Boolean)]
     public bool IsDeleted { get; set; }
 
