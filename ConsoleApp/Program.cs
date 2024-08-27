@@ -1,4 +1,5 @@
-﻿using KaelsToolBox_2.Web.Database.MongoDB;
+﻿using KaelsToolBox_2.Math;
+using KaelsToolBox_2.Web.Database.MongoDB;
 
 namespace ConsoleApp;
 
@@ -6,6 +7,21 @@ internal class Program
 {
     static void Main(string[] args)
     {
+        var i = Normalizer.Floats([1f, 1f, 1f, 1f, 1f, 5f, 10f, 10f]);
+
+        float total = 0f;
+        foreach (var item in i)
+        {
+            Console.WriteLine(item);
+            total += item;
+        }
+        Console.WriteLine("---");
+        Console.WriteLine(total);
+
+        Console.ReadLine();
+
+        return;
+
         Connection connection = GetDatabase();
 
         string database_name = "TestingDB";
