@@ -33,7 +33,7 @@ namespace KaelsToolBox_2.Tools
 
         public void Log(object item)
         {
-            lock (_lock) { logs.Add($"[{DateTime.Now.ToString("T")}]{item.ToString()}"); }
+            lock (_lock) { logs.Add($"[{DateTime.Now.ToString("O")}]{item.ToString()}"); }
         }
 
     }

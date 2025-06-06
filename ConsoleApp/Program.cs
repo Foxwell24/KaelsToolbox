@@ -1,5 +1,5 @@
-﻿using KaelsToolBox_2.Math;
-using KaelsToolBox_2.Web.Database.MongoDB;
+﻿using KaelsToolBox_2.Database.SQLite3;
+using KaelsToolBox_2.Database.SQLite3.Examples;
 
 namespace ConsoleApp;
 
@@ -7,63 +7,48 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        var i = Normalizer.Floats([1f, 1f, 1f, 1f, 1f, 5f, 10f, 10f]);
+        DataBaseManager manager = new("D:\\Dev\\Application Files\\Databases\\SQLite3.db", 0.1);
+        DatabaseTable<Person> table = new("PersonTable", manager);
+        DatabaseTable<Book> bookTable = new("Bookshelf", manager);
 
-        float total = 0f;
-        foreach (var item in i)
+        table.LoadAll(out Person[] people);
+        bookTable.LoadAll(out Book[] books);
+
+        while (manager.GetCommandQue() != 0)
         {
-            Console.WriteLine(item);
-            total += item;
+            //Console.WriteLine(manager.GetCommandQue());
+            Thread.Sleep(10);
         }
-        Console.WriteLine("---");
-        Console.WriteLine(total);
+
+        foreach (Person person in people)
+        {
+            Console.WriteLine($"{person.Id}, {person.Name}");
+        }
+
+        foreach(Book book in books)
+        {
+            Console.WriteLine($"{book.Id}, {book.Title}");
+        }
 
         Console.ReadLine();
-
-        return;
-
-        Connection connection = GetDatabase();
-
-        string database_name = "TestingDB";
-        string database_main = "Main";
-
-        /*var add_loop = Task.Run(() =>
-        {
-            while (true)
-            {
-                connection.Insert(database_name, database_main, new DatabaseObject());
-                Thread.Sleep(1000);
-            }
-        });*/
-
-        var change_loop = Task.Run(() =>
-        {
-            while (true)
-            {
-                var all = connection.GetAll<DatabaseObject>(database_name, database_main);
-                var chosen = all[Random.Shared.Next(all.Count)];
-
-                connection.Update(database_name, database_main, chosen);
-                Thread.Sleep(1100);
-            }
-        });
-
-        connection.Watch<DatabaseObject>(database_name, database_main, changed => Console.Out.WriteLineAsync(changed.ToString()));
-
-        Task.WaitAll([change_loop]);
-
-        //Console.ReadKey();
     }
+}
 
-    private static Connection GetDatabase()
+public class Book(string title, string description, string author, int pages) : IDisplayInTable
+{
+    public static string[] Headers => ["Id", "Title", "Description", "Author", "Pages"];
+    public static string[] HeaderArgs => ["INTEGER PRIMARY KEY AUTOINCREMENT", "TEXT", "TEXT", "TEXT", "INTEGER"];
+
+    public int Id { get; init; }
+    public string Title = title;
+    public string Description = description;
+    public string Author = author;
+    public int Pages = pages;
+
+    public string[] GetRow() => [$"\"{Title}\"", $"\"{Description}\"", $"\"{Author}\"", $"{Pages}"];
+
+    public static IDisplayInTable Load(List<string> db_result)
     {
-        string user = "kael";
-        string pword = "%23Foxwell24";
-        string address = "invoicing.mjfbjr4.mongodb.net";
-        var c = new Connection($"mongodb+srv://{user}:{pword}@{address}/?retryWrites=true&w=majority&appName=Invoicing");
-
-        if (!c.Connect()) throw new Exception("Could not connect to Database");
-
-        return c;
+        return new Book(db_result[1], db_result[2], db_result[3], int.Parse(db_result[4])) { Id = int.Parse(db_result[0]) };
     }
 }
