@@ -1,0 +1,312 @@
+﻿@page "/create_bill"
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid Spacing="5">
+
+                @* Top Left section, contains invoice number, memo, date, and due date *@
+                <MudItem xs="6">
+                    <MudPaper Class="pa-4">
+                        <MudGrid Spacing="5">
+                            
+                            <MudItem xs="6">
+                                <MudTextField Label="Invoice Number"
+                                              @bind-Value="model.InvoiceNumber"
+                                              InputType="InputType.Text"
+                                              OnlyValidateIfDirty="true"
+                                              Required="true"
+                                              RequiredError="Invoice numebr is required!" />
+                            </MudItem>
+
+                            <MudItem xs="6">
+                                <MudTextField Label="Memo"
+                                              @bind-Value="model.Memo"
+                                              InputType="InputType.Text" />
+                            </MudItem>
+
+                            <MudItem xs="6">
+                                <MudDatePicker Label="Date"
+                                               @bind-Date="model.Date"
+                                               Required="true" />
+                            </MudItem>
+
+                            <MudItem xs="6">
+                                <MudDatePicker Label="Due Date"
+                                               @bind-Date="model.DueDate"
+                                               Required="true" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+
+                @* Top Right section, total, total gst, save and cancel *@
+                <MudItem xs="6">
+                    <MudPaper Class="pa-4">
+                        <MudGrid Spacing="5">
+
+                            <MudItem xs="6">
+                                <MudButton OnClick="@(() => { return; })"
+                                           Color="Color.Primary"
+                                           Variant="Variant.Filled">
+                                    Save
+                                </MudButton>
+                            </MudItem>
+
+                            <MudItem xs="6">
+                                <MudButton OnClick="@(() => { return; })"
+                                           Color="Color.Secondary"
+                                           Variant="Variant.Text"
+                                           Style="float:right">
+                                    Cancel
+                                </MudButton>
+                            </MudItem>
+
+                            <MudItem xs="6">
+                                <MudNumericField Label="Total"
+                                                 Value="model.Total"
+                                                 Format="C"
+                                                 HideSpinButtons="true" 
+                                                 ReadOnly="true"/>
+                            </MudItem>
+
+                            <MudItem xs="6">
+                                <MudNumericField Label="Total GST"
+                                                 Value="model.Total_GST"
+                                                 Format="C"
+                                                 HideSpinButtons="true"
+                                                 ReadOnly="true" />
+                            </MudItem>
+
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+
+                @* Bottom section, contains list of line items *@
+                <MudItem xs="12">
+                    <MudPaper Class="pa-4">
+                        <MudGrid Spacing="2" Justify="Justify.FlexStart">
+                            <MudItem xs="12">
+                                <MudList T="BillClass.LineItem"
+                                         ReadOnly="true">
+
+                                    @foreach (var item in model.Items)
+                                    {
+                                        <MudListItem>
+                                            <MudGrid Spacing="0">
+                                                <MudItem xs="2">
+                                                    <MudTextField Label="Name"
+                                                                  @bind-Value="item.Name"
+                                                                  InputType="InputType.Text"
+                                                                  OnlyValidateIfDirty="true"
+                                                                  Required="true" />
+                                                </MudItem>
+
+                                                <MudItem xs="5">
+                                                    <MudTextField Label="Description"
+                                                                  @bind-Value="item.Description"
+                                                                  InputType="InputType.Text" />
+                                                </MudItem>
+
+                                                <MudItem xs="1">
+                                                    <MudNumericField Label="Price Per"
+                                                                     @bind-Value="item.PricePer"
+                                                                     HideSpinButtons="true"
+                                                                     Format="C" />
+                                                </MudItem>
+
+                                                <MudItem xs="1">
+                                                    <MudNumericField Label="Quantity"
+                                                                     @bind-Value="item.Quantity"
+                                                                     HideSpinButtons="true"
+                                                                     Format="F2" />
+                                                </MudItem>
+
+                                                <MudItem xs="1">
+                                                    <MudNumericField Label="Total (ex GST)"
+                                                                     @bind-Value="item.Total_exGST"
+                                                                     HideSpinButtons="true"
+                                                                     Format="C" />
+                                                </MudItem>
+
+                                                <MudItem xs="1">
+                                                    <MudNumericField Label="GST"
+                                                                     @bind-Value="item.GST"
+                                                                     HideSpinButtons="true"
+                                                                     Format="C" />
+                                                </MudItem>
+
+                                                <MudItem xs="1">
+                                                    <MudNumericField Label="Total (ex GST)"
+                                                                     @bind-Value="item.Total_incGST"
+                                                                     HideSpinButtons="true"
+                                                                     Format="C" />
+                                                </MudItem>
+
+                                            </MudGrid>
+                                        </MudListItem>
+                                    }
+                                </MudList>
+                            </MudItem>
+
+                            <MudItem xs="6">
+                                <MudButton OnClick="@(() => model.Items.Add(new()))"
+                                           Color="Color.Primary"
+                                           Variant="Variant.Filled">
+                                    Add New Item
+                                </MudButton>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudButton OnClick="@(() => model.RecalculateTotals())"
+                                           Color="Color.Secondary"
+                                           Variant="Variant.Text"
+                                           Style="float:right">
+                                    Recalculate
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </MudItem>
+</MudGrid>
+
+<style>
+    * :hover{
+        outline: 1px solid red
+    }
+</style>
+
+@code {
+    bool success;
+    string[] errors = { };
+    MudForm form;
+    BillClass model;
+
+    protected override void OnInitialized()
+    {
+        model = new();
+        model.Date = DateTime.Today;
+        model.DueDate = DateTime.Today.AddDays(30);
+    }
+
+    public class BillClass
+    {
+        public string? InvoiceNumber { get; set; }
+
+        private DateTime? date;
+        public DateTime? Date
+        {
+            get => date;
+            set
+            {
+                date = value;
+                DueDate = Date?.AddDays(30);
+            }
+        }
+
+        public DateTime? DueDate { get; set; }
+        public string? Memo { get; set; }
+        public List<LineItem> Items { get; set; } = [];
+
+        public decimal Total
+        {
+            get
+            {
+                decimal running = 0;
+                foreach (var item in Items) running += item.Total_incGST ?? 0;
+                return running;
+            }
+        }
+
+        public decimal Total_GST
+        {
+            get
+            {
+                decimal running = 0;
+                foreach (var item in Items) running += item.GST ?? 0;
+                return running;
+            }
+        }
+
+        public void RecalculateTotals()
+        {
+            foreach (var item in Items)
+            {
+                item.Total_exGST = item.PricePer * item.Quantity;
+            }
+        }
+
+        public class LineItem
+        {
+            public string? Name { get; set; }
+            public string? Description { get; set; }
+
+            private decimal? pricePer;
+            public decimal? PricePer
+            {
+                get => pricePer;
+                set
+                {
+                    if (value is null) return;
+                    pricePer = value;
+                    Total_exGST = pricePer * Quantity;
+                }
+            }
+
+            private decimal? quantity;
+            public decimal? Quantity
+            {
+                get => quantity;
+                set
+                {
+                    if (value is null) return;
+                    quantity = value;
+                    Total_exGST = pricePer * Quantity;
+                }
+            }
+
+            private decimal? total_exGST;
+            public decimal? Total_exGST
+            {
+                get => total_exGST;
+                set
+                {
+                    if (value is null) return;
+                    total_exGST = value;
+                    gst = Total_exGST * 0.1M;
+                    total_incGST = Total_exGST + GST;
+                }
+            }
+
+            private decimal? gst;
+            public decimal? GST
+            {
+                get => gst;
+                set
+                {
+                    if (value is null) return;
+                    gst = value;
+                    total_incGST = Total_exGST + GST;
+                }
+            }
+
+            private decimal? total_incGST;
+            public decimal? Total_incGST
+            {
+                get => total_incGST;
+                set
+                {
+                    if (value is null) return;
+                    total_incGST = value;
+                    total_exGST = Total_incGST / 1.1M;
+                    gst = Total_incGST / 11M;
+                }
+            }
+
+        }
+    }
+}
