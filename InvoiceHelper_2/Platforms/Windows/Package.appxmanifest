@@ -7,7 +7,7 @@
   xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
   IgnorableNamespaces="uap rescap uap18">
 
-  <Identity Name="KaelFoxwell.InvoiceAssistant" Publisher="CN=6C6E2117-C73A-40FB-93D2-1E6DF1BDBD35" Version="1.1.7.0" />
+  <Identity Name="KaelFoxwell.InvoiceAssistant" Publisher="CN=6C6E2117-C73A-40FB-93D2-1E6DF1BDBD35" Version="1.1.8.0" />
 
   <mp:PhoneIdentity PhoneProductId="c868741b-ea9a-42c9-b8cb-4a0c5b8befea" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -27,7 +27,13 @@
   </Resources>
 
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Windows.PartialTrustApplication" uap18:TrustLevel="appContainer" uap18:RuntimeBehavior="windowsApp">
+    <Application Id="App"
+                 Executable="$targetnametoken$.exe"
+                 EntryPoint="$targetentrypoint$"
+                 uap18:TrustLevel="appContainer"
+                 uap18:RuntimeBehavior="windowsApp">
+      <!--EntryPoint="EntryPoint="Windows.PartialTrustApplication">-->
+      <!--EntryPoint="$targetentrypoint$">--> 
       <uap:VisualElements
         DisplayName="Invoice Assistant"
         Description="no description"
@@ -43,7 +49,7 @@
   </Applications>
 
   <Capabilities>
-    <!-- <rescap:Capability Name="runFullTrust" /> -->
+    <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 
 </Package>

@@ -26,7 +26,11 @@
   </Resources>
 
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+    <Application Id="App"
+                 Executable="$targetnametoken$.exe"
+                 EntryPoint="$targetentrypoint$">
+      <!--EntryPoint="EntryPoint="Windows.PartialTrustApplication">-->
+      <!--EntryPoint="$targetentrypoint$">-->
       <uap:VisualElements
         DisplayName="$placeholder$"
         Description="$placeholder$"
